@@ -17,3 +17,52 @@
 #  [4,5]
 # [2,4]
 #[4,3]
+class Move
+	attr_accessor :coord, :links 
+
+	def initialize coord, links= nil
+		@coord = coord 
+		@links = moves(coord)
+	end
+
+	def moves coord
+		links = []
+		moves = [[-1,2],[-1,-2],[-2,1],[-2,-1],[1,2],[1,-2],[2,1],[2,-1]]
+		moves.each do |x|
+			if coord[0]+x[0] < 9 && coord[0]+x[0] > 0 && coord[1]+x[1] < 9 && coord[1]+x[1] > 0
+				links <<[coord[0]+x[0],coord[1]+x[1]] 
+			end
+		end
+	links
+	end
+
+end
+
+class Board
+
+	attr_accessor :squares
+
+	# Polulates the @squares hash with 64 squares named 1A-8H, each containing a Move object.
+	def generate_squares
+		i=0
+		#square_names = [*("a".."h")].product([*("1".."8")]).map{|x, y| x+y} 
+		square_coords = [*1..8].repeated_permutation(2).to_a
+		@squares = {}
+		while i < 64 do 
+			@squares[square_coords[i]] = Move.new square_coords[i] 
+			i += 1
+		end
+		puts @squares
+	end
+
+
+		
+
+	def create_move_tree srt_coord, end_coord
+
+	end
+
+end
+
+
+
