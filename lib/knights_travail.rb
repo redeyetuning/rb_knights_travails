@@ -1,30 +1,14 @@
-
-#Assignment
-#Your task is to build a function knight_moves that shows the simplest possible way to get from one square to another by outputting all squares the knight will stop on along the way.
-
-#You can think of the board as having 2-dimensional coordinates. Your function would therefore look like:
-
-#knight_moves([0,0],[1,2]) == [[0,0],[1,2]]
-#knight_moves([0,0],[3,3]) == [[0,0],[1,2],[3,3]]
-#knight_moves([3,3],[0,0]) == [[3,3],[1,2],[0,0]]
-#Put together a script that creates a game board and a knight.
-#Treat all possible moves the knight could make as children in a tree. Don’t allow any moves to go off the board.
-#Decide which search algorithm is best to use for this case. Hint: one of them could be a potentially infinite series.
-#Use the chosen search algorithm to find the shortest path between the starting square (or node) and the ending square. Output what that full path looks like, e.g.:
-#> knight_moves([3,3],[4,3])
-# => You made it in 3 moves!  Heres your path:
-#   [3,3]
-#  [4,5]
-# [2,4]
-#[4,3]
+# Helper class for Board. Creates individual objects for each Knights Move.
 class Move
-	attr_accessor :coord, :links 
+	attr_accessor :coord, :links, :parent
 
-	def initialize coord, links= nil
+	def initialize coord, parent= nil
 		@coord = coord 
 		@links = moves(coord)
+		@parent = parent
 	end
 
+	# For a given start coordinate sets the Moves @links with all posibble move combinations that stay within the 8x8 board.
 	def moves coord
 		links = []
 		moves = [[-1,2],[-1,-2],[-2,1],[-2,-1],[1,2],[1,-2],[2,1],[2,-1]]
@@ -38,31 +22,41 @@ class Move
 
 end
 
+# Main class following the path taken by a Knight's Moves
 class Board
-
-	attr_accessor :squares
-
-	# Polulates the @squares hash with 64 squares named 1A-8H, each containing a Move object.
-	def generate_squares
-		i=0
-		#square_names = [*("a".."h")].product([*("1".."8")]).map{|x, y| x+y} 
-		square_coords = [*1..8].repeated_permutation(2).to_a
-		@squares = {}
-		while i < 64 do 
-			@squares[square_coords[i]] = Move.new square_coords[i] 
-			i += 1
+	# Calculates the shortest number of moves a chess Knight can take between the Strt and End Coordinates entered. Board coordinates are from [1,1] to [8,8].	
+	def knight_moves strt_coord, end_coord
+		return "Coordinates entered should be between [1,1] and [8,8]! Please try again."
+		queue = [Move.new(strt_coord)]
+		while queue.length >0
+			current = queue.pop
+			
+			if current.links.include?(end_coord)
+				trip = list_parents(current)
+				puts "You made it in #{@moves} moves!\n\n"
+				return "Your path was #{strt_coord} -> #{trip}#{end_coord}"				
+			else 
+				current.links.each{|link| queue.unshift(Move.new(link, current))}
+			end
+		
 		end
-		puts @squares
 	end
 
-
-		
-
-	def create_move_tree srt_coord, end_coord
-
+	# Creates a string of the moves taken to reach the end coordinate by using their @parent values.
+	def list_parents move
+		@moves = 1
+		output = ""
+		current = move
+		until current.parent == nil
+			output.insert(0, "#{current.coord} -> ")
+			@moves += 1
+			current = current.parent 
+		end 
+		output
 	end
 
 end
+
 
 
 
